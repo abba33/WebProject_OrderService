@@ -72,48 +72,10 @@ class ShoppingRepository {
         
     }
  
-    async CreateNewOrder(customerId) {
-        const cart = await Cart.findOne({ customerId });
-        
-        if (!cart || cart.items.length === 0) {
-            return {}; 
-        }
-    
-        let totalAmount = 0;
-        const orderItems = [];
-        let productDetails = []; 
-
-        cart.items.forEach((item) => {
-            
-            const itemTotal = parseFloat(item.product.price) * parseInt(item.amount);
-            totalAmount += itemTotal;
-            totalAmount = parseFloat(totalAmount.toFixed(2));
-            orderItems.push(item);
-            productDetails.push({
-                productId: item.product._id,
-                productAmountBought: item.amount,
-            });
-        });
-    
-        const orderId = uuidv4();
-        const order = new Order({
-            orderId,
-            customerId,
-            amount: totalAmount,
-            status: 'received',
-            items: orderItems,
-        });
-    
-        // cart.items = []; 
-    
-        const orderResult = await order.save();
-        await cart.save();
- 
-        return {
-            orderResult,
-            productDetails,
-        };
-    }
+    async CreateNewOrder(orderData) {
+        const order = new Order(orderData);
+        return await order.save();
+}
 }
 
 module.exports = ShoppingRepository;

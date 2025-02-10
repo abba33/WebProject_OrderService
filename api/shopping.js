@@ -9,29 +9,22 @@ shoppingRoutes = (app, channel) => {
 
     SubscribeMessage(channel, service)
 
-    app.post('/order',auth, async (req,res,next) => {
+    app.post('/order', async (req,res,next) => {
 
-        const { _id } = req.user;
- 
-        const { data } = await service.PlaceOrder(_id);
-        const payload = await service.GetOrderPayload(_id, data.orderResult, 'CREATE_ORDER')
-        const notificationPayload = await service.GetNotificationPayload(req.user.email, data.orderResult, 'SEND_CHECKOUT_CONFIRMATION_MAIL')
-        const productPayload = await service.GetProductPayload( data.productDetails, 'REDUCE_PRODUCT_STOCK')
-        
-
-        PublishMessage(channel,process.env.CUSTOMER_BINDING_KEY, JSON.stringify(payload))
-        PublishMessage(channel,process.env.NOTIFICATION_BINDING_KEY, JSON.stringify(notificationPayload))
-        PublishMessage(channel,process.env.PRODUCT_BINDING_KEY, JSON.stringify(productPayload))
-
-        res.status(200).json(data);
+        try {
+            const order = await service.PlaceOrder(req.body);
+            res.status(201).json(order);
+          } catch (error) {
+            res.status(500).json({ error: error.message });
+          }
 
     });
 
-    app.get('/orders',auth, async (req,res,next) => {
+    app.get('/orders/:customerId',auth, async (req,res,next) => {
 
-        const { _id } = req.user;
+        // const { _id } = req.user;
 
-        const { data } = await service.GetOrders(_id);
+        const { data } = await service.GetOrders(request.params.customerId);
         
         res.status(200).json(data);
 

@@ -11,11 +11,9 @@ class ShoppingService {
     return FormatData(cartItems);
   }
 
-  async PlaceOrder(_id) {
+  async PlaceOrder(orderData) {
  
-    const {orderResult,productDetails} = await this.repository.CreateNewOrder(_id);
-
-    return FormatData({orderResult,productDetails});
+    return await this.repository.CreateNewOrder(orderData);
   }
 
   async GetOrders(customerId) {
