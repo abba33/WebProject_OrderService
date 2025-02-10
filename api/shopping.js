@@ -20,11 +20,11 @@ shoppingRoutes = (app, channel) => {
 
     });
 
-    app.get('/orders/:customerId',auth, async (req,res,next) => {
+    app.get('/orders/:customerId', async (req,res,next) => {
 
         // const { _id } = req.user;
 
-        const { data } = await service.GetOrders(request.params.customerId);
+        const { data } = await service.GetOrders(req.params.customerId);
         
         res.status(200).json(data);
 
